@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Deck List</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function() {
+        // Toggle the deck details when clicking on a deck
+        $(".deck-toggle").click(function() {
+            var deckId = $(this).data("id");
+            $("#deck-" + deckId).toggle();  // Toggle the deck visibility
+        });
+    });
+  </script>
+</head>
+<body>
+<div class="container mt-5">
+  <h1>Deck List</h1>
+
+  <div th:each="deck : ${decks}" class="card mb-3">
+    <div class="card-header">
+      <button class="btn btn-link deck-toggle" type="button" data-id="${deck.id}">
+        <h5 th:text="${deck.owner}">Deck Owner</h5>
+      </button>
+    </div>
+
+    <!-- Deck flashcards list (hidden initially) -->
+    <div id="deck-${deck.id}" class="card-body" style="display:none;">
+      <h6>Flashcards:</h6>
+      <ul>
+        <li th:each="flashCard : ${deck.flashcards}">
+          <strong th:text="${flashCard.question}">Flashcard Question</strong>
+          <p th:text="${flashCard.answer}">Flashcard Answer</p>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+</body>
+</html>

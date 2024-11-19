@@ -7,7 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/flashcard") // Prefix for all mappings in this controller
+@RequestMapping("/flashcard")
 public class FlashCardController {
 
     @Autowired
