@@ -1,9 +1,6 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -21,5 +18,6 @@ public class FlashCard {
     private String question;
     private String answer;
 
-    boolean Shared;
+
+    private boolean shared ;
 }

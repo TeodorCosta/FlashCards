@@ -8,19 +8,21 @@
 <div class="container mt-5">
     <h1>Create a Flashcard</h1>
     <form th:action="@{/flashcard/save}" th:object="${flashCard}" method="post">
-        <div class="form-group mb-3">
-            <label for="question">Question</label>
-            <input type="text" class="form-control" id="question" name="question" th:field="*{question}" required>
+        <div>
+            <label for="question">Question:</label>
+            <input type="text" id="question" th:field="*{question}" required>
         </div>
-        <div class="form-group mb-3">
-            <label for="answer">Answer</label>
-            <textarea class="form-control" id="answer" name="answer" th:field="*{answer}" rows="3" required></textarea>
+        <div>
+            <label for="answer">Answer:</label>
+            <input type="text" id="answer" th:field="*{answer}" required>
         </div>
-        <div class="form-check mb-3">
-            <input type="checkbox" class="form-check-input" id="Shared" name="Shared" th:field="*{Shared}">
-            <label class="form-check-label" for="Shared">Share this flashcard?</label>
+        <div>
+            <label for="shared">Shared:</label>
+            <input type="checkbox" id="shared" th:field="*{shared}" />
         </div>
-        <button type="submit" class="btn btn-primary">Save Flashcard</button>
+        <div>
+            <button type="submit">Submit</button>
+        </div>
     </form>
 </div>
 </body>
