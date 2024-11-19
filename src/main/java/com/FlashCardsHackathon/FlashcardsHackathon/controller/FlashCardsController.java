@@ -13,9 +13,7 @@ public class FlashCardsController {
     @Autowired
     private FlashCardsRepository flashCardsRepository;
 
-    @GetMapping
-    public List<FlashCards> getAllFlashCards() {
-        return flashCardsRepository.findAll();
-    }
+
+
 
 }
