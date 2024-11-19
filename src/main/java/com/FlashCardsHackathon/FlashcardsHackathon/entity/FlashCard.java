@@ -21,5 +21,5 @@ public class FlashCard {
     private String question;
     private String answer;
 
-    boolean isShared;
+    boolean Shared;
 }
