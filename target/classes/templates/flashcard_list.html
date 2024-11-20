@@ -190,6 +190,10 @@
                 grid-template-columns: 1fr;
             }
         }
+        .card-image.zoomed {
+    transform: scale(1.5); /* Adjust the scale factor as needed */
+    transition: transform 0.3s ease; /* Smooth transition */
+}
     </style>
 </head>
 <body>
@@ -199,13 +203,16 @@
     <div layout:fragment="content">
         <div class="flashcards-container">
             <div class="page-header">
-                <h1 class="page-title">My Flashcards</h1>
+                <h1 class="page-title">Flashcardurile mele</h1>
             </div>
 
             <div class="cards-grid">
                 <!-- Existing Flashcards -->
                 <div th:each="flashCard : ${flashCards}" class="card">
-                    <img th:if="${flashCard.imagePath}" th:src="${flashCard.imagePath}" alt="Flashcard Image" class="card-image">
+                    <img th:src="${flashCard.imagePath != null ? flashCard.imagePath : '/images/Logo.png'}"
+                         alt="Flashcard Image" class="card-image zoomed">
+
+
                     <div class="card-overlay"></div>
                     <div class="card-content">
                         <h3 class="card-title" th:text="${flashCard.question}">Flashcard Question</h3>
@@ -228,7 +235,7 @@
                 <a href="/flashcard/new" class="card add-card">
                     <div class="add-card-content">
                         <div class="add-icon">+</div>
-                        <div class="add-text">Create New Flashcard</div>
+                        <div class="add-text">Crează un nou Flashcard</div>
                     </div>
                 </a>
             </div>

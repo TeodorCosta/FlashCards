@@ -1,5 +1,6 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.controller;
 
+import org.apache.commons.io.FilenameUtils;
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.Deck;
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.FlashCard;
 import com.FlashCardsHackathon.FlashcardsHackathon.service.FlashCardService;
@@ -17,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.UUID;
 
 @Controller
 @RequestMapping("/flashcard")
@@ -36,7 +38,10 @@ public class FlashCardController {
                                 @RequestParam("media") MultipartFile media) throws IOException {
         if (!media.isEmpty()) {
             // Get the original filename of the uploaded image
-            String imageName = media.getOriginalFilename();
+            String originalFilename = media.getOriginalFilename();
+
+            // Generate a unique filename to avoid conflicts
+            String uniqueFilename = generateUniqueFilename(originalFilename);
 
             // Ensure the directory exists, create if not
             File directory = new File(IMAGE_DIR);
@@ -44,15 +49,27 @@ public class FlashCardController {
                 directory.mkdirs();  // Create the directory if it doesn't exist
             }
 
-            // Save the image to the static/images folder
-            File file = new File(IMAGE_DIR + File.separator + imageName);
-            media.transferTo(file);  // Save the file to disk
+            // Check if the file already exists
+            File file = new File(IMAGE_DIR + File.separator + uniqueFilename);
+            if (!file.exists()) {
+                // If the file doesn't exist, save the new file
+                media.transferTo(file);  // Save the file to disk
+            }
+            // If the file exists, we'll use the existing file (no action needed)
 
             // Set the relative image path in the FlashCard object
-            flashCard.setImagePath("/images/" + imageName);  // Path to access the image publicly
+            flashCard.setImagePath("/images/" + uniqueFilename);  // Path to access the image publicly
         }
         flashCardService.saveFlashCard(flashCard);
         return "redirect:/flashcard/list";
+    }
+
+    // Helper method to generate a unique filename
+    private String generateUniqueFilename(String originalFilename) {
+        String baseName = FilenameUtils.getBaseName(originalFilename);
+        String extension = FilenameUtils.getExtension(originalFilename);
+        String uniqueName = baseName + "_" + System.currentTimeMillis() + "." + extension;
+        return uniqueName;
     }
 
     @GetMapping("/new")
@@ -81,6 +98,23 @@ public class FlashCardController {
     public String listFlashCards(Model model) {
         model.addAttribute("flashCards", flashCardService.getAllFlashCards());
         return "flashcard_list";
+    }
+
+    @GetMapping("/delete/{id}")
+    public String deleteFlashCard(@PathVariable UUID id) {
+        boolean deleted = flashCardService.deleteFlashCard(id);
+        if (deleted) {
+            return "redirect:/flashcard/list";  // Redirect to list of flashcards if successful
+        } else {
+            // Optionally return an error page or message if deletion failed
+            return "error_page";  // Replace with actual error page view
+        }
+    }
+    @GetMapping("/edit/{id}")
+    public String updateFlashCard(@PathVariable UUID id, Model model) {
+        model.addAttribute("flashCard",flashCardService.getFlashCardById(id));
+        model.addAttribute("decks", deckService.getAllDecks());
+        return "flashcard_form";
     }
 }
 

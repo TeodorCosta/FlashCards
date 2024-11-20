@@ -1,50 +1,170 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Create Flashcard</title>
+    <title>Creaza un Flashcard</title>
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/home.css}">
+    <style>
+        .create-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .checkbox-label {
+            font-weight: 500;
+            color: #4a5568;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 0;
+        }
+
+        .media-upload {
+            border: 2px dashed #e2e8f0;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .media-upload:hover {
+            border-color: #4f46e5;
+            background-color: #f8fafc;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+    </style>
 </head>
 <body>
-<div th:replace="~{fragments/sidebar :: sidebar}"></div>
 <div layout:fragment="content">
-    <div class="container mt-5">
-        <h1>Create a Flashcard</h1>
-        <!-- Form with enctype="multipart/form-data" for file uploads -->
-        <form th:action="@{/flashcard/save}" th:object="${flashCard}" method="post" enctype="multipart/form-data">
-            <div>
-                <label for="question">Question:</label>
-                <input type="text" id="question" th:field="*{question}" required>
-            </div>
-            <div>
-                <label for="answer">Answer:</label>
-                <input type="text" id="answer" th:field="*{answer}" required>
-            </div>
-            <div>
-                <label for="deck">Deck:</label>
-                <select id="deck" th:field="*{deck.id}">
-                    <option th:each="deck : ${decks}" th:value="${deck.id}" th:text="${deck.name}"></option>
-                </select>
-            </div>
-            <div>
-                <label for="materie">Materie:</label>
-                <input type="text" id="materie" th:field="*{materie}" required>
-            </div>
-            <div>
-                <label for="shared">Shared:</label>
-                <input type="checkbox" id="shared" th:field="*{shared}" />
-            </div>
-            <!-- File input for media (image/video) -->
-            <div>
-                <label for="media">Media:</label>
-                <input type="file" id="media" name="media" accept="image/*,video/*">
-            </div>
-            <div>
-                <button type="submit">Submit</button>
-            </div>
-        </form>
+    <div class="create-container">
+        <div class="page-header">
+            <h1 class="page-title">Crează un nou Flashcard</h1>
+        </div>
+
+        <div class="form-card">
+            <form th:action="@{/flashcard/save}" th:object="${flashCard}" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label class="form-label" for="question">Question</label>
+                    <input type="text" id="question" th:field="*{question}" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="answer">Answer</label>
+                    <input type="text" id="answer" th:field="*{answer}" class="form-control" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="deck">Colecții</label>
+                    <select id="deck" th:field="*{deck.id}" class="form-control">
+                        <option th:each="deck : ${decks}" th:value="${deck.id}" th:text="${deck.name}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="materie">Subiect</label>
+                    <input type="text" id="materie" th:field="*{materie}" class="form-control" required>
+                </div>
+
+                <div class="checkbox-wrapper">
+                    <input type="checkbox" id="shared" th:field="*{shared}" class="form-check-input">
+                    <label class="checkbox-label" for="shared">Shared</label>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="media">Media</label>
+                    <div class="media-upload">
+                        <input type="file" id="media" name="media" accept="image/*,video/*" class="form-control">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-submit">Creaza un Flashcard</button>
+            </form>
+        </div>
     </div>
 </div>
 </body>

@@ -30,6 +30,8 @@ public class Deck {
     private String owner;
     private boolean paid;
 
+    private String imagePath;
+
     public void addFlashCard(FlashCard flashCard) {
         this.flashcards.add(flashCard);
     }

@@ -25,4 +25,13 @@ public class FlashCardService {
     public FlashCard getFlashCardByName(String name) {
         return flashCardsRepository.findByQuestion(name).orElse(null);  // Assuming a method to find by name
     }
+
+    public boolean deleteFlashCard(UUID id) {
+        if (flashCardsRepository.existsById(id)) {
+            flashCardsRepository.deleteById(id);
+            return true;  // Return true if the flashcard was deleted
+        } else {
+            return false;  // Return false if the flashcard wasn't found
+        }
+    }
 }

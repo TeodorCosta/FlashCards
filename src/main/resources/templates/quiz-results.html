@@ -104,8 +104,8 @@
 
       <!-- Early End Notice -->
       <div th:if="${endedEarly}" class="early-end-notice">
-        <strong>Quiz ended early due to an incorrect answer!</strong>
-        <p class="mb-0">Remember: In this mode, the quiz ends on the first wrong answer.</p>
+        <strong>Testul s-a închis pentru că ai introdus un răspuns greșit!</strong>
+        <p class="mb-0">Amintește-ți: Testul se închide după o greșeală.</p>
       </div>
 
       <!-- Score Summary -->
@@ -131,13 +131,13 @@
           </div>
 
           <div class="mb-2">
-            <span class="answer-label">Your Answer:</span>
+            <span class="answer-label">Răspunsul tău:</span>
             <span th:class="${answer.correct ? 'correct-answer' : 'incorrect-answer'}"
                   th:text="${answer.userAnswer}">User Answer</span>
           </div>
 
           <div th:if="${!answer.correct || answer.userAnswer == 'Skipped'}">
-            <span class="answer-label">Correct Answer:</span>
+            <span class="answer-label">Răspunsul corect:</span>
             <span class="correct-answer" th:text="${answer.flashCard.answer}">Correct Answer</span>
           </div>
         </div>
@@ -145,7 +145,7 @@
 
       <!-- Action Buttons -->
       <div class="text-center mt-4">
-        <a th:href="@{/deck/{id}/quiz(id=${deck.id})}" class="btn btn-primary">Try Again</a>
+        <a th:href="@{/deck/{id}/quiz(id=${deck.id})}" class="btn btn-primary">Încearcă din nou</a>
         <a th:href="@{/decks}" class="btn btn-secondary ms-2">Back to Decks</a>
       </div>
     </div>

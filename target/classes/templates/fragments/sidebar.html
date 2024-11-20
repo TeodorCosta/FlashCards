@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,27 +12,33 @@
   <button class="toggle-btn" id="toggle-btn">☰</button>
   <ul class="nav flex-column mt-3">
     <li class="nav-item">
+      <a href="/home" class="nav-link">
+        <span class="icon">🏠</span>
+        <span class="text">Acasă</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a href="/deck/list" class="nav-link">
         <span class="icon">📚</span>
-        <span class="text">My Decks</span>
+        <span class="text">Colecțiile mele</span>
       </a>
     </li>
     <li class="nav-item">
       <a href="/flashcard/list" class="nav-link">
         <span class="icon">📂</span>
-        <span class="text">My Flashcards</span>
+        <span class="text">Flashcardurile mele</span>
       </a>
     </li>
     <li class="nav-item">
-      <a href="/user" class="nav-link">
-        <span class="icon">👤</span>
-        <span class="text">Profile</span>
+      <a href="/flashcard/list" class="nav-link">
+        <span class="icon">🔧</span>
+        <span class="text">Statusurile mele</span>
       </a>
     </li>
     <li class="nav-item">
       <a href="/logout" class="nav-link">
         <span class="icon">🚪</span>
-        <span class="text">Logout</span>
+        <span class="text">Deconectare</span>
       </a>
     </li>
   </ul>

@@ -5,17 +5,141 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${pageTitle}">Default Title</title>
+    <title th:text="${pageTitle}">Zen Cards</title>
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
     <link rel="stylesheet" th:href="@{/home.css}">
-</head>
-<body>
 
-<!-- Content to be injected into layout's "content" section -->
-<div layout:fragment="content">
-    <h1>Welcome to Your Flashcard Dashboard</h1>
-    <p>Manage your decks, create new ones, and review your flashcards.</p>
+    <!-- Inline styles -->
+    <style th:inline="css">
+        :root {
+            --primary-color: #6be89b;
+            --secondary-color: #0076a5;
+            --background-color: #1a1a2e;
+            --text-color: #ffffff;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            color: var(--primary-color);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .img-wrap {
+            position: relative;
+            display: inline-block;
+            margin: 2rem 0;
+        }
+
+        .img-wrap::before, .img-wrap::after {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: -10px;
+            right: -10px;
+            bottom: -10px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+            z-index: -1;
+            animation: pulse 2s infinite alternate;
+        }
+
+        .img-wrap::after {
+            filter: blur(15px);
+            opacity: 0.7;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            100% {
+                transform: scale(1.05);
+            }
+        }
+
+        img {
+            border-radius: 50%;
+            display: block;
+            width: 300px;
+            height: 300px;
+            object-fit: cover;
+            border: 4px solid var(--text-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        img:hover {
+            transform: scale(1.05) rotate(5deg);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-top: 1rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body style="background=#FFF7D1;">
+<!-- Content section for layout -->
+<div layout:fragment="content" class="container">
+    <h1>Zen Cards</h1>
+    <div class="img-wrap">
+        <img th:src="@{/images/Logo2.png}"
+             alt="Zen Cards Logo"
+             th:alt="#{logo.alt.text}">
+    </div>
+    <p class="subtitle">Discover tranquility in every swipe</p>
 </div>
 
+<!-- Optional: Add some particle animation for extra flair -->
+<script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: absolute;
+                    width: 5px;
+                    height: 5px;
+                    background: #FFF7D1;
+                    border-radius: 50%;
+                    top: ${Math.random() * 100}vh;
+                    left: ${Math.random() * 100}vw;
+                    animation: float ${5 + Math.random() * 10}s infinite linear;
+                `;
+                container.appendChild(particle);
+            }
+        });
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-100vh); }
+        }
+    </script>
 </body>
 </html>

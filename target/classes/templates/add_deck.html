@@ -1,70 +1,179 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crează o colecție</title>
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
   <link rel="stylesheet" th:href="@{/home.css}">
+  <style>
+        .create-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a202c;
+            margin-bottom: 1rem;
+        }
+
+        .form-card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #4a5568;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+
+        .form-control:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+            outline: none;
+        }
+
+        .checkbox-wrapper {
+            position: relative;
+            padding-left: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .checkbox-wrapper input[type="checkbox"] {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+
+        .checkbox-label {
+            font-weight: 500;
+            color: #4a5568;
+            cursor: pointer;
+            display: block;
+            margin-bottom: 0;
+        }
+
+        .flashcards-section {
+            margin-top: 2rem;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 1.5rem;
+        }
+
+        .flashcard-item {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            transition: all 0.2s;
+        }
+
+        .flashcard-item:hover {
+            background-color: #f7fafc;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 500;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.2);
+        }
+    </style>
 </head>
 <body>
-<!-- Sidebar Fragment -->
-<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+<div layout:fragment="content">
+  <div class="create-container">
+    <div class="page-header">
+      <h1 class="page-title">Creaza o noua Colecție</h1>
+    </div>
 
-<!-- Content Area -->
-<div class="content" id="content">
-  <div layout:fragment="content">
-    <div class="container mt-5">
-      <h1>Create a Deck</h1>
-      <form th:action="@{/deck/save}" th:object="${deck}" method="post">
-        <div class="mb-3">
-          <label for="owner" class="form-label">Name:</label>
+    <div class="form-card">
+      <form th:action="@{/deck/save}" method="post" enctype="multipart/form-data" th:object="${deck}">
+        <div class="form-group">
+          <label class="form-label" for="name">Nume</label>
           <input type="text" id="name" th:field="*{name}" class="form-control" required>
         </div>
-        <div class="mb-3">
-          <label for="owner" class="form-label">Description:</label>
+
+        <div class="form-group">
+          <label class="form-label" for="description">Descriere</label>
           <input type="text" id="description" th:field="*{description}" class="form-control" required>
         </div>
-        <!-- Deck Owner -->
-        <div class="mb-3">
-          <label for="owner" class="form-label">Owner:</label>
+
+        <div class="form-group">
+          <label class="form-label" for="owner">Autor</label>
           <input type="text" id="owner" th:field="*{owner}" class="form-control" required>
         </div>
 
-        <!-- Deck Shared -->
-        <div class="mb-3 form-check">
+        <div class="checkbox-wrapper">
           <input type="checkbox" id="shared" th:field="*{shared}" class="form-check-input">
-          <label for="shared" class="form-check-label">Shared</label>
+          <label class="checkbox-label" for="shared">Shared</label>
         </div>
 
-        <!-- Deck Paid -->
-        <div class="mb-3 form-check">
+        <div class="checkbox-wrapper">
           <input type="checkbox" id="paid" th:field="*{paid}" class="form-check-input">
-          <label for="paid" class="form-check-label">Paid</label>
+          <label class="checkbox-label" for="paid">Paid</label>
         </div>
+        <div class="form-group">
+        <label class="form-label" for="media">Media</label>
+        <div class="media-upload">
+          <input type="file" id="media" name="media" accept="image/*,video/*" class="form-control">
+        </div>
+    </div>
 
-        <!-- Flashcards Selection -->
-        <div class="mb-3">
-          <h3>Select Flashcards:</h3>
-          <div th:each="flashCard : ${flashCards}">
-            <div class="form-check">
+        <div class="flashcards-section">
+          <h3 class="form-label">Selectează Fleshcarduri</h3>
+          <div th:each="flashCard : ${flashCards}" class="flashcard-item">
+            <div class="checkbox-wrapper">
               <input class="form-check-input" type="checkbox"
                      th:id="'flashCard-' + ${flashCard.id}"
                      th:name="selectedFlashcards"
                      th:value="${flashCard.id}">
-              <label class="form-check-label" th:for="'flashCard-' + ${flashCard.id}">
+              <label class="checkbox-label" th:for="'flashCard-' + ${flashCard.id}">
                 <span th:text="${flashCard.question}"></span>
-                <span th:text="${flashCard.materie}"></span>
+                <small class="text-muted" th:text="' - ' + ${flashCard.materie}"></small>
               </label>
             </div>
           </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Deck</button>
+        <button type="submit" class="btn-submit">Crează o colecție</button>
       </form>
     </div>
   </div>
 </div>
-
 </body>
 </html>

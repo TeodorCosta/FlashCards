@@ -54,4 +54,16 @@
             Optional<Deck> deckOptional = deckRepository.findById(id);
             return deckOptional.orElseThrow(() -> new RuntimeException("Deck not found with id " + id));
         }
+        public boolean deleteDeck(UUID id) {
+            Optional<Deck> deckOptional = deckRepository.findById(id);
+            if (deckOptional.isPresent()) {
+                Deck deck = deckOptional.get();
+
+                // Delete the deck
+                deckRepository.delete(deck);
+                return true;  // Return true if the deck was deleted successfully
+            } else {
+                return false;  // Return false if the deck wasn't found
+            }
+        }
     }

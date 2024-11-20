@@ -1,6 +1,7 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.service;
 
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.*;
+import com.FlashCardsHackathon.FlashcardsHackathon.repository.FlashCardRepository;
 import com.FlashCardsHackathon.FlashcardsHackathon.repository.QuizAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,10 @@ public class QuizService {
 
     @Autowired
     private QuizAttemptRepository quizAttemptRepository;
+
+
+    @Autowired
+    private FlashCardRepository flashCardRepository;
 
     public boolean hasActiveQuiz(UUID deckId) {
         return activeQuizzes.containsKey(deckId);
@@ -121,4 +126,6 @@ public class QuizService {
         List<FlashCard> cards = shuffledCards.get(deckId);
         return cards != null ? cards.size() : 0;
     }
+
+
 }
