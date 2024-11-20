@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${pageTitle}">Default Title</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/home.css}">
+</head>
+<body>
+<div class="d-flex"style="width:100%;">
+  <!-- Sidebar -->
+  <div th:replace="fragments/sidebar :: sidebar"></div>
+
+  <!-- Content Area -->
+  <div class="content" id="content">
+    <!-- Page specific content will be injected here -->
+    <div layout:fragment="content"></div>
+  </div>
+</div>
+
+<!-- Sidebar Toggle JavaScript -->
+<script>
+    const sidebar = document.getElementById("sidebar");
+    const content = document.getElementById("content");
+    const toggleBtn = document.getElementById("toggle-btn");
+
+    toggleBtn.addEventListener("click", () => {
+        sidebar.classList.toggle("collapsed");
+        content.classList.toggle("collapsed");
+
+        // Hide text when sidebar is collapsed
+        const texts = sidebar.querySelectorAll(".text");
+        if (sidebar.classList.contains("collapsed")) {
+            texts.forEach(text => text.style.display = "none");
+        } else {
+            texts.forEach(text => text.style.display = "inline");
+        }
+    });
+</script>
+
+</body>
+</html>
