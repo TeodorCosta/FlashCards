@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Mode</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/home.css}">
+  <style>
+        .quiz-card {
+            perspective: 1000px;
+            height: 400px;
+            margin: 20px auto;
+            max-width: 600px;
+        }
+
+        .card-face {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            background: white;
+        }
+
+        .progress {
+            height: 10px;
+            margin: 20px 0;
+        }
+
+        .quiz-controls {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .quiz-complete {
+            text-align: center;
+            margin: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #f8f9fa;
+        }
+
+        .score-display {
+            text-align: right;
+            margin: 10px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        .feedback {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .feedback.correct {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .feedback.incorrect {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/sidebar :: sidebar}"></div>
+
+<div class="content" id="content">
+  <div layout:fragment="content">
+    <div class="container mt-5">
+      <!-- Error Message -->
+      <div th:if="${error}" class="error-message" th:text="${error}"></div>
+
+      <div th:if="${deck != null}">
+        <h1 class="mb-4" th:text="${deck.name + ' Quiz'}">Quiz</h1>
+
+        <!-- Score Display -->
+        <div class="score-display">
+          Score: <span th:text="${currentScore}">0</span>/<span th:text="${currentCard}">0</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress">
+          <div class="progress-bar" role="progressbar"
+               th:style="'width: ' + ${(currentCard + 1) * 100 / totalCards} + '%'"
+               th:aria-valuenow="${(currentCard + 1)}"
+               aria-valuemin="0" th:aria-valuemax="${totalCards}">
+          </div>
+        </div>
+
+        <!-- Answer Feedback -->
+        <div th:if="${lastAnswerCorrect != null}"
+             th:class="${lastAnswerCorrect ? 'feedback correct' : 'feedback incorrect'}"
+             th:text="${lastAnswerCorrect ? 'Correct!' : 'Incorrect. Try the next one!'}">
+        </div>
+
+        <!-- Quiz Complete Screen -->
+        <div th:if="${quizComplete}" class="quiz-complete">
+          <h2>Quiz Complete!</h2>
+          <p>You've completed the deck: <span th:text="${deck.name}"></span></p>
+          <p>Final Score: <span th:text="${currentScore}">0</span>/<span th:text="${totalCards}">0</span></p>
+          <div class="mt-4">
+            <a th:href="@{/deck/{id}/quiz(id=${deck.id})}" class="btn btn-primary">Restart Quiz</a>
+            <a th:href="@{/decks}" class="btn btn-secondary">Back to Decks</a>
+          </div>
+        </div>
+
+        <!-- Quiz Card -->
+        <div th:unless="${quizComplete}" class="quiz-card">
+          <div class="card-face">
+            <h3 class="mb-4">Question</h3>
+            <p class="h4 text-center mb-4" th:text="${currentFlashCard?.question}"></p>
+
+            <form th:if="${currentFlashCard != null}" th:action="@{/deck/{deckId}/quiz/check(deckId=${deck.id})}" method="POST" class="mt-4">
+              <div class="form-group">
+                <label for="userAnswer" class="form-label">Your Answer:</label>
+                <input type="text" class="form-control mb-3" id="userAnswer" name="userAnswer" required autofocus>
+              </div>
+              <button type="submit" class="btn btn-primary">Submit Answer</button>
+            </form>
+          </div>
+        </div>
+
+        <!-- Quiz Controls -->
+        <div class="quiz-controls">
+          <a th:href="@{/decks}" class="btn btn-secondary">Exit Quiz</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -22,4 +22,7 @@ public class FlashCardService {
     public FlashCard getFlashCardById(UUID id){
         return flashCardsRepository.getReferenceById(id);
     }
+    public FlashCard getFlashCardByName(String name) {
+        return flashCardsRepository.findByQuestion(name).orElse(null);  // Assuming a method to find by name
+    }
 }
