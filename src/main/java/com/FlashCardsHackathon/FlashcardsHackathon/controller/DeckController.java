@@ -9,6 +9,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -32,8 +33,16 @@ public class DeckController {
     }
     @GetMapping("/list")
     public String listDecks(Model model) {
-        // Fetch all decks along with their associated flashcards
+        // Fetch all decks
         List<Deck> decks = deckService.getAllDecks();
+
+        // Fetch flashcards for each deck
+        for (Deck deck : decks) {
+            // Add the flashcards for each deck to the model
+            deck.setFlashcards(new ArrayList<>(deckService.getFlashCardsByDeckId(deck.getId())));
+        }
+
+        // Add decks with flashcards to the model
         model.addAttribute("decks", decks);
         return "deck_list";  // Thymeleaf template name
     }
@@ -45,4 +54,5 @@ public class DeckController {
         deckService.saveDeck(deck, selectedFlashcards);
         return "redirect:/deck/list";  // Redirect to list of decks or some other page
     }
+
 }

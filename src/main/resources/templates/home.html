@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${pageTitle}">Default Title</title>
+    <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/home.css}">
+</head>
+<body>
+
+<!-- Content to be injected into layout's "content" section -->
+<div layout:fragment="content">
+    <h1>Welcome to Your Flashcard Dashboard</h1>
+    <p>Manage your decks, create new ones, and review your flashcards.</p>
+</div>
+
+</body>
+</html>
