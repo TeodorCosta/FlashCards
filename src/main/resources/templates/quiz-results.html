@@ -1,5 +1,7 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,69 +9,81 @@
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
   <link rel="stylesheet" th:href="@{/home.css}">
   <style>
-        .results-container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
+    .results-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-        .result-card {
-            background: white;
-            border-radius: 10px;
-            padding: 20px;
-            margin-bottom: 15px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
+    .result-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
 
-        .result-card.correct {
-            border-left: 5px solid #28a745;
-        }
+    .result-card.correct {
+      border-left: 5px solid #28a745;
+    }
 
-        .result-card.incorrect {
-            border-left: 5px solid #dc3545;
-        }
+    .result-card.incorrect {
+      border-left: 5px solid #dc3545;
+    }
 
-        .result-card.skipped {
-            border-left: 5px solid #ffc107;
-            opacity: 0.7;
-        }
+    .result-card.skipped {
+      border-left: 5px solid #ffc107;
+      opacity: 0.7;
+    }
 
-        .score-summary {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 30px;
-            text-align: center;
-        }
+    .score-summary {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 30px;
+      text-align: center;
+    }
 
-        .score-number {
-            font-size: 2.5em;
-            font-weight: bold;
-            color: #0d6efd;
-        }
+    .score-number {
+      font-size: 2.5em;
+      font-weight: bold;
+      color: #0d6efd;
+    }
 
-        .answer-label {
-            font-weight: bold;
-            color: #6c757d;
-        }
+    .answer-label {
+      font-weight: bold;
+      color: #6c757d;
+    }
 
-        .correct-answer {
-            color: #28a745;
-        }
+    .correct-answer {
+      color: #28a745;
+    }
 
-        .incorrect-answer {
-            color: #dc3545;
-        }
+    .incorrect-answer {
+      color: #dc3545;
+    }
 
-        .early-end-notice {
-            background-color: #fff3cd;
-            color: #856404;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-    </style>
+    .early-end-notice {
+      background-color: #fff3cd;
+      color: #856404;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .quiz-metadata {
+      background: #e9ecef;
+      padding: 10px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+      font-size: 0.9em;
+    }
+
+    .quiz-metadata span {
+      margin-right: 15px;
+    }
+  </style>
 </head>
 <body>
 <div th:replace="~{fragments/sidebar :: sidebar}"></div>
@@ -78,6 +92,13 @@
   <div layout:fragment="content">
     <div class="results-container">
       <h1 class="mb-4" th:text="${deck.name + ' - Quiz Results'}">Quiz Results</h1>
+
+      <!-- Quiz Metadata -->
+      <div class="quiz-metadata">
+        <span th:text="'Started: ' + ${#temporals.format(attempt.startTime, 'dd-MM-yyyy HH:mm')}"></span>
+        <span th:text="'Ended: ' + ${#temporals.format(attempt.endTime, 'dd-MM-yyyy HH:mm')}"></span>
+        <span th:text="'Duration: ' + ${#temporals.duration(attempt.startTime, attempt.endTime).toMinutes()} + ' minutes'"></span>
+      </div>
 
       <!-- Early End Notice -->
       <div th:if="${endedEarly}" class="early-end-notice">
@@ -97,19 +118,25 @@
 
       <!-- Results List -->
       <div class="results-list">
-        <div th:each="result : ${quizResults}"
-             th:class="${'result-card ' + (result.userAnswer == 'Skipped' ? 'skipped' : (result.correct ? 'correct' : 'incorrect'))}">
-          <h4 class="mb-3" th:text="${result.question}">Question</h4>
+        <div th:each="answer : ${attempt.answers}"
+             th:class="${'result-card ' + (answer.userAnswer == 'Skipped' ? 'skipped' : (answer.correct ? 'correct' : 'incorrect'))}">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <h4 class="mb-0" th:text="${answer.flashCard.question}">Question</h4>
+            <span class="badge"
+                  th:classappend="${answer.correct ? 'bg-success' : (answer.userAnswer == 'Skipped' ? 'bg-warning' : 'bg-danger')}"
+                  th:text="${answer.correct ? 'Correct' : (answer.userAnswer == 'Skipped' ? 'Skipped' : 'Incorrect')}">
+                        </span>
+          </div>
 
           <div class="mb-2">
             <span class="answer-label">Your Answer:</span>
-            <span th:class="${result.correct ? 'correct-answer' : 'incorrect-answer'}"
-                  th:text="${result.userAnswer}">User Answer</span>
+            <span th:class="${answer.correct ? 'correct-answer' : 'incorrect-answer'}"
+                  th:text="${answer.userAnswer}">User Answer</span>
           </div>
 
-          <div th:if="${!result.correct || result.userAnswer == 'Skipped'}">
+          <div th:if="${!answer.correct || answer.userAnswer == 'Skipped'}">
             <span class="answer-label">Correct Answer:</span>
-            <span class="correct-answer" th:text="${result.correctAnswer}">Correct Answer</span>
+            <span class="correct-answer" th:text="${answer.flashCard.answer}">Correct Answer</span>
           </div>
         </div>
       </div>

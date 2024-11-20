@@ -1,152 +1,126 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.service;
 
-import com.FlashCardsHackathon.FlashcardsHackathon.entity.Deck;
-import com.FlashCardsHackathon.FlashcardsHackathon.entity.FlashCard;
+import com.FlashCardsHackathon.FlashcardsHackathon.entity.*;
+import com.FlashCardsHackathon.FlashcardsHackathon.repository.QuizAttemptRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import jakarta.transaction.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Service
 public class QuizService {
-    private final Map<UUID, Integer> quizProgress = new HashMap<>();
+    private final Map<UUID, QuizAttempt> activeQuizzes = new HashMap<>();
     private final Map<UUID, List<FlashCard>> shuffledCards = new HashMap<>();
-    private final Map<UUID, Integer> quizScores = new HashMap<>();
-    private final Map<UUID, List<QuizAnswer>> quizAnswers = new HashMap<>();
-    private final Map<UUID, Boolean> earlyEndStatus = new HashMap<>();
+    private final Map<UUID, Integer> currentCardIndex = new HashMap<>();
 
     @Autowired
-    private DeckService deckService;
+    private QuizAttemptRepository quizAttemptRepository;
 
-    public static class QuizAnswer {
-        private final String question;
-        private final String correctAnswer;
-        private final String userAnswer;
-        private final boolean correct;
-
-        public QuizAnswer(String question, String correctAnswer, String userAnswer, boolean correct) {
-            this.question = question;
-            this.correctAnswer = correctAnswer;
-            this.userAnswer = userAnswer;
-            this.correct = correct;
-        }
-
-        public String getQuestion() { return question; }
-        public String getCorrectAnswer() { return correctAnswer; }
-        public String getUserAnswer() { return userAnswer; }
-        public boolean isCorrect() { return correct; }
-    }
-
+    @Transactional
     public void startQuiz(Deck deck) {
-        if (deck == null || deck.getFlashcards() == null) {
+        if (deck == null || deck.getFlashcards() == null || deck.getFlashcards().isEmpty()) {
             throw new IllegalArgumentException("Deck cannot be null and must contain flashcards");
         }
+
         List<FlashCard> cards = new ArrayList<>(deck.getFlashcards());
         Collections.shuffle(cards);
+
+        QuizAttempt attempt = new QuizAttempt();
+        attempt.setDeck(deck);
+        attempt.setStartTime(LocalDateTime.now());
+        attempt.setTotalQuestions(cards.size());
+        attempt.setCorrectAnswers(0);
+        attempt.setEndedEarly(false);
+
         UUID deckId = deck.getId();
         shuffledCards.put(deckId, cards);
-        quizProgress.put(deckId, 0);
-        quizScores.put(deckId, 0);
-        quizAnswers.put(deckId, new ArrayList<>());
-        earlyEndStatus.put(deckId, false);
+        currentCardIndex.put(deckId, 0);
+        activeQuizzes.put(deckId, attempt);
     }
 
-    public FlashCard getCurrentCard(Deck deck) {
-        if (deck == null) return null;
-        List<FlashCard> cards = shuffledCards.get(deck.getId());
-        int currentIndex = quizProgress.getOrDefault(deck.getId(), 0);
-        return cards != null && currentIndex < cards.size() ? cards.get(currentIndex) : null;
+    public FlashCard getCurrentCard(UUID deckId) {
+        List<FlashCard> cards = shuffledCards.get(deckId);
+        int index = currentCardIndex.getOrDefault(deckId, 0);
+        return cards != null && index < cards.size() ? cards.get(index) : null;
     }
 
+    @Transactional
     public boolean checkAnswer(UUID deckId, String userAnswer) {
         if (userAnswer == null) return false;
 
-        Deck deck = deckService.getDeckById(deckId);
-        if (deck == null) return false;
+        QuizAttempt attempt = activeQuizzes.get(deckId);
+        FlashCard currentCard = getCurrentCard(deckId);
 
-        FlashCard currentCard = getCurrentCard(deck);
-        if (currentCard == null) return false;
+        if (attempt == null || currentCard == null) return false;
 
         boolean isCorrect = currentCard.getAnswer().trim().equalsIgnoreCase(userAnswer.trim());
-        if (isCorrect) {
-            incrementScore(deckId);
-        } else {
-            earlyEndStatus.put(deckId, true);
-        }
 
-        // Store the answer
-        quizAnswers.get(deckId).add(new QuizAnswer(
-                currentCard.getQuestion(),
-                currentCard.getAnswer(),
-                userAnswer,
-                isCorrect
-        ));
+        QuizAnswer answer = new QuizAnswer();
+        answer.setFlashCard(currentCard);
+        answer.setUserAnswer(userAnswer);
+        answer.setCorrect(isCorrect);
+        answer.setQuestionOrder(currentCardIndex.get(deckId));
+        attempt.addAnswer(answer);
+
+        if (isCorrect) {
+            attempt.setCorrectAnswers(attempt.getCorrectAnswers() + 1);
+        } else {
+            attempt.setEndedEarly(true);
+            endQuiz(deckId);
+        }
 
         return isCorrect;
     }
 
+    @Transactional
     public void endQuiz(UUID deckId) {
-        // Mark all remaining cards as skipped
-        Deck deck = deckService.getDeckById(deckId);
-        if (deck == null) return;
+        QuizAttempt attempt = activeQuizzes.get(deckId);
+        if (attempt == null) return;
 
+        // Mark remaining cards as skipped
         List<FlashCard> cards = shuffledCards.get(deckId);
-        int currentIndex = quizProgress.getOrDefault(deckId, 0);
+        int current = currentCardIndex.getOrDefault(deckId, 0);
 
-        if (cards != null && currentIndex < cards.size() - 1) {
-            for (int i = currentIndex + 1; i < cards.size(); i++) {
-                FlashCard card = cards.get(i);
-                quizAnswers.get(deckId).add(new QuizAnswer(
-                        card.getQuestion(),
-                        card.getAnswer(),
-                        "Skipped",
-                        false
-                ));
-            }
+        for (int i = current + 1; i < cards.size(); i++) {
+            QuizAnswer skippedAnswer = new QuizAnswer();
+            skippedAnswer.setFlashCard(cards.get(i));
+            skippedAnswer.setUserAnswer("Skipped");
+            skippedAnswer.setCorrect(false);
+            skippedAnswer.setQuestionOrder(i);
+            attempt.addAnswer(skippedAnswer);
         }
+
+        attempt.setEndTime(LocalDateTime.now());
+        quizAttemptRepository.save(attempt);
+
+        // Cleanup
+        activeQuizzes.remove(deckId);
+        shuffledCards.remove(deckId);
+        currentCardIndex.remove(deckId);
     }
 
-    public boolean endedEarly(UUID deckId) {
-        return earlyEndStatus.getOrDefault(deckId, false);
+    public QuizAttempt getQuizAttempt(UUID deckId) {
+        return activeQuizzes.get(deckId);
     }
 
-    public List<QuizAnswer> getQuizResults(UUID deckId) {
-        return quizAnswers.getOrDefault(deckId, new ArrayList<>());
-    }
-
-    private void incrementScore(UUID deckId) {
-        quizScores.merge(deckId, 1, Integer::sum);
-    }
-
-    public int getScore(UUID deckId) {
-        return quizScores.getOrDefault(deckId, 0);
-    }
-
-    public boolean isQuizComplete(Deck deck) {
-        if (deck == null) return true;
-        List<FlashCard> cards = shuffledCards.get(deck.getId());
-        int currentIndex = quizProgress.getOrDefault(deck.getId(), 0);
-        return cards != null && currentIndex >= cards.size();
-    }
-
-    public int getCurrentCardIndex(UUID deckId) {
-        return quizProgress.getOrDefault(deckId, 0);
+    public boolean isQuizComplete(UUID deckId) {
+        List<FlashCard> cards = shuffledCards.get(deckId);
+        int index = currentCardIndex.getOrDefault(deckId, 0);
+        return cards == null || index >= cards.size();
     }
 
     public void moveToNextCard(UUID deckId) {
-        quizProgress.merge(deckId, 1, Integer::sum);
+        currentCardIndex.merge(deckId, 1, Integer::sum);
+    }
+
+    public int getCurrentCardIndex(UUID deckId) {
+        return currentCardIndex.getOrDefault(deckId, 0);
     }
 
     public int getTotalCards(UUID deckId) {
         List<FlashCard> cards = shuffledCards.get(deckId);
         return cards != null ? cards.size() : 0;
-    }
-
-    public void resetQuiz(UUID deckId) {
-        quizProgress.remove(deckId);
-        shuffledCards.remove(deckId);
-        quizScores.remove(deckId);
-        quizAnswers.remove(deckId);
-        earlyEndStatus.remove(deckId);
     }
 }

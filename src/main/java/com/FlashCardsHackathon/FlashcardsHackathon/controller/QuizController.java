@@ -1,6 +1,7 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.controller;
 
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.Deck;
+import com.FlashCardsHackathon.FlashcardsHackathon.entity.QuizAttempt;
 import com.FlashCardsHackathon.FlashcardsHackathon.service.DeckService;
 import com.FlashCardsHackathon.FlashcardsHackathon.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,21 +39,12 @@ public class QuizController {
             @RequestParam String userAnswer,
             RedirectAttributes redirectAttributes) {
 
-        Deck deck = deckService.getDeckById(deckId);
-        if (deck == null) {
-            redirectAttributes.addFlashAttribute("error", "Deck not found");
-            return "redirect:/decks";
-        }
-
         boolean isCorrect = quizService.checkAnswer(deckId, userAnswer);
 
-        // If answer is incorrect or quiz is complete, end the quiz
-        if (!isCorrect || quizService.isQuizComplete(deck)) {
-            quizService.endQuiz(deckId); // Mark quiz as complete
+        if (!isCorrect || quizService.isQuizComplete(deckId)) {
             return "redirect:/deck/" + deckId + "/quiz/results";
         }
 
-        // Only move to next card if answer was correct
         quizService.moveToNextCard(deckId);
         redirectAttributes.addFlashAttribute("lastAnswerCorrect", true);
 
@@ -63,14 +55,19 @@ public class QuizController {
     public String showResults(@PathVariable UUID deckId, Model model) {
         Deck deck = deckService.getDeckById(deckId);
         if (deck == null) {
-            return "redirect:/deck/list ";
+            return "redirect:/decks";
+        }
+
+        QuizAttempt attempt = quizService.getQuizAttempt(deckId);
+        if (attempt == null) {
+            return "redirect:/decks";
         }
 
         model.addAttribute("deck", deck);
-        model.addAttribute("quizResults", quizService.getQuizResults(deckId));
-        model.addAttribute("totalCards", quizService.getTotalCards(deckId));
-        model.addAttribute("score", quizService.getScore(deckId));
-        model.addAttribute("endedEarly", quizService.endedEarly(deckId));
+        model.addAttribute("attempt", attempt);
+        model.addAttribute("totalCards", attempt.getTotalQuestions());
+        model.addAttribute("score", attempt.getCorrectAnswers());
+        model.addAttribute("endedEarly", attempt.isEndedEarly());
 
         return "quiz-results";
     }
@@ -84,12 +81,8 @@ public class QuizController {
         model.addAttribute("deck", deck);
         model.addAttribute("currentCard", quizService.getCurrentCardIndex(deckId));
         model.addAttribute("totalCards", quizService.getTotalCards(deckId));
-        model.addAttribute("currentScore", quizService.getScore(deckId));
-        model.addAttribute("quizComplete", quizService.isQuizComplete(deck));
-
-        if (!quizService.isQuizComplete(deck)) {
-            model.addAttribute("currentFlashCard", quizService.getCurrentCard(deck));
-        }
+        model.addAttribute("currentFlashCard", quizService.getCurrentCard(deckId));
+        model.addAttribute("quizComplete", quizService.isQuizComplete(deckId));
 
         return "quiz";
     }

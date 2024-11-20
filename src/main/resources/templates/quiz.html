@@ -1,144 +1,139 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layouts/dashboard}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Mode</title>
+  <title>Quiz</title>
   <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
   <link rel="stylesheet" th:href="@{/home.css}">
   <style>
-        .quiz-card {
-            perspective: 1000px;
-            height: 400px;
-            margin: 20px auto;
-            max-width: 600px;
-        }
+    .quiz-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+    }
 
-        .card-face {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            background: white;
-        }
+    .question-card {
+      background: white;
+      border-radius: 10px;
+      padding: 30px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+    }
 
-        .progress {
-            height: 10px;
-            margin: 20px 0;
-        }
+    .progress-bar {
+      height: 10px;
+      border-radius: 5px;
+      margin-bottom: 30px;
+    }
 
-        .quiz-controls {
-            margin-top: 20px;
-            text-align: center;
-        }
+    .answer-input {
+      border: 2px solid #dee2e6;
+      border-radius: 8px;
+      padding: 15px;
+      font-size: 1.1em;
+      width: 100%;
+      margin-bottom: 20px;
+      transition: border-color 0.3s ease;
+    }
 
-        .quiz-complete {
-            text-align: center;
-            margin: 20px;
-            padding: 20px;
-            border-radius: 10px;
-            background-color: #f8f9fa;
-        }
+    .answer-input:focus {
+      border-color: #0d6efd;
+      outline: none;
+      box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
 
-        .score-display {
-            text-align: right;
-            margin: 10px;
-            font-size: 1.2em;
-            font-weight: bold;
-        }
+    .quiz-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
 
-        .feedback {
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            text-align: center;
-        }
+    .quiz-stats {
+      background: #f8f9fa;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-size: 0.9em;
+    }
 
-        .feedback.correct {
-            background-color: #d4edda;
-            color: #155724;
-        }
+    .question-text {
+      font-size: 1.5em;
+      font-weight: 500;
+      margin-bottom: 20px;
+      color: #212529;
+    }
 
-        .feedback.incorrect {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
+    .last-answer-feedback {
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 500;
+    }
 
-        .error-message {
-            background-color: #f8d7da;
-            color: #721c24;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            text-align: center;
-        }
-    </style>
+    .last-answer-feedback.correct {
+      background-color: #d4edda;
+      color: #155724;
+    }
+
+    .last-answer-feedback.incorrect {
+      background-color: #f8d7da;
+      color: #721c24;
+    }
+  </style>
 </head>
 <body>
 <div th:replace="~{fragments/sidebar :: sidebar}"></div>
 
 <div class="content" id="content">
   <div layout:fragment="content">
-    <div class="container mt-5">
-      <!-- Error Message -->
-      <div th:if="${error}" class="error-message" th:text="${error}"></div>
-
-      <div th:if="${deck != null}">
-        <h1 class="mb-4" th:text="${deck.name + ' Quiz'}">Quiz</h1>
-
-        <!-- Score Display -->
-        <div class="score-display">
-          Score: <span th:text="${currentScore}">0</span>/<span th:text="${currentCard}">0</span>
+    <div class="quiz-container">
+      <div class="quiz-header">
+        <h1 th:text="${deck.name}">Quiz</h1>
+        <div class="quiz-stats">
+          Question <span th:text="${currentCard + 1}">1</span> of <span th:text="${totalCards}">10</span>
         </div>
+      </div>
 
-        <!-- Progress Bar -->
-        <div class="progress">
-          <div class="progress-bar" role="progressbar"
-               th:style="'width: ' + ${(currentCard + 1) * 100 / totalCards} + '%'"
-               th:aria-valuenow="${(currentCard + 1)}"
-               aria-valuemin="0" th:aria-valuemax="${totalCards}">
-          </div>
+      <!-- Progress Bar -->
+      <div class="progress progress-bar">
+        <div class="progress-bar bg-primary" role="progressbar"
+             th:style="'width: ' + ${(currentCard * 100) / totalCards} + '%'"
+             th:aria-valuenow="${currentCard}"
+             aria-valuemin="0"
+             th:aria-valuemax="${totalCards}">
         </div>
+      </div>
 
-        <!-- Answer Feedback -->
-        <div th:if="${lastAnswerCorrect != null}"
-             th:class="${lastAnswerCorrect ? 'feedback correct' : 'feedback incorrect'}"
-             th:text="${lastAnswerCorrect ? 'Correct!' : 'Incorrect. Try the next one!'}">
-        </div>
+      <!-- Last Answer Feedback -->
+      <div th:if="${lastAnswerCorrect != null}"
+           th:class="${'last-answer-feedback ' + (lastAnswerCorrect ? 'correct' : 'incorrect')}">
+        <span th:text="${lastAnswerCorrect ? 'Correct!' : 'Incorrect!'}">Feedback</span>
+      </div>
 
-        <!-- Quiz Complete Screen -->
-        <div th:if="${quizComplete}" class="quiz-complete">
-          <h2>Quiz Complete!</h2>
-          <p>You've completed the deck: <span th:text="${deck.name}"></span></p>
-          <p>Final Score: <span th:text="${currentScore}">0</span>/<span th:text="${totalCards}">0</span></p>
-          <div class="mt-4">
-            <a th:href="@{/deck/{id}/quiz(id=${deck.id})}" class="btn btn-primary">Restart Quiz</a>
-            <a th:href="@{/decks}" class="btn btn-secondary">Back to Decks</a>
-          </div>
-        </div>
+      <!-- Question Card -->
+      <div class="question-card">
+        <p class="question-text" th:text="${currentFlashCard.question}">Question goes here?</p>
 
-        <!-- Quiz Card -->
-        <div th:unless="${quizComplete}" class="quiz-card">
-          <div class="card-face">
-            <h3 class="mb-4">Question</h3>
-            <p class="h4 text-center mb-4" th:text="${currentFlashCard?.question}"></p>
+        <form th:action="@{/deck/{deckId}/quiz/check(deckId=${deck.id})}" method="post">
+          <input type="text"
+                 name="userAnswer"
+                 class="answer-input"
+                 placeholder="Type your answer here..."
+                 autocomplete="off"
+                 required
+                 autofocus>
 
-            <form th:if="${currentFlashCard != null}" th:action="@{/deck/{deckId}/quiz/check(deckId=${deck.id})}" method="POST" class="mt-4">
-              <div class="form-group">
-                <label for="userAnswer" class="form-label">Your Answer:</label>
-                <input type="text" class="form-control mb-3" id="userAnswer" name="userAnswer" required autofocus>
-              </div>
-              <button type="submit" class="btn btn-primary">Submit Answer</button>
-            </form>
-          </div>
-        </div>
+          <button type="submit" class="btn btn-primary w-100">Submit Answer</button>
+        </form>
+      </div>
 
-        <!-- Quiz Controls -->
-        <div class="quiz-controls">
-          <a th:href="@{/decks}" class="btn btn-secondary">Exit Quiz</a>
-        </div>
+      <!-- Navigation -->
+      <div class="text-center">
+        <a th:href="@{/decks}" class="btn btn-outline-secondary">Exit Quiz</a>
       </div>
     </div>
   </div>
