@@ -29,7 +29,11 @@ public class QuizController {
             return "redirect:/decks";
         }
 
-        quizService.startQuiz(deck);
+        // Only start a new quiz if there isn't an active one
+        if (!quizService.hasActiveQuiz(id)) {
+            quizService.startQuiz(deck);
+        }
+
         return showQuizCard(id, model);
     }
 
@@ -41,12 +45,17 @@ public class QuizController {
 
         boolean isCorrect = quizService.checkAnswer(deckId, userAnswer);
 
-        if (!isCorrect || quizService.isQuizComplete(deckId)) {
-            return "redirect:/deck/" + deckId + "/quiz/results";
+        // Move to next card before checking if quiz is complete
+        if (isCorrect) {
+            quizService.moveToNextCard(deckId);
+            redirectAttributes.addFlashAttribute("lastAnswerCorrect", true);
         }
 
-        quizService.moveToNextCard(deckId);
-        redirectAttributes.addFlashAttribute("lastAnswerCorrect", true);
+        // Check if quiz should end (either due to incorrect answer or completion)
+        if (!isCorrect || quizService.isQuizComplete(deckId)) {
+            quizService.endQuiz(deckId);
+            return "redirect:/deck/" + deckId + "/quiz/results";
+        }
 
         return "redirect:/deck/" + deckId + "/quiz";
     }

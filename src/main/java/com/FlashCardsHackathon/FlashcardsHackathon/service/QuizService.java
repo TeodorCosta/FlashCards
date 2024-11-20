@@ -18,6 +18,10 @@ public class QuizService {
     @Autowired
     private QuizAttemptRepository quizAttemptRepository;
 
+    public boolean hasActiveQuiz(UUID deckId) {
+        return activeQuizzes.containsKey(deckId);
+    }
+
     @Transactional
     public void startQuiz(Deck deck) {
         if (deck == null || deck.getFlashcards() == null || deck.getFlashcards().isEmpty()) {
@@ -68,7 +72,6 @@ public class QuizService {
             attempt.setCorrectAnswers(attempt.getCorrectAnswers() + 1);
         } else {
             attempt.setEndedEarly(true);
-            endQuiz(deckId);
         }
 
         return isCorrect;
@@ -94,11 +97,6 @@ public class QuizService {
 
         attempt.setEndTime(LocalDateTime.now());
         quizAttemptRepository.save(attempt);
-
-        // Cleanup
-        activeQuizzes.remove(deckId);
-        shuffledCards.remove(deckId);
-        currentCardIndex.remove(deckId);
     }
 
     public QuizAttempt getQuizAttempt(UUID deckId) {

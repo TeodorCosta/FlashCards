@@ -97,7 +97,9 @@
       <div class="quiz-metadata">
         <span th:text="'Started: ' + ${#temporals.format(attempt.startTime, 'dd-MM-yyyy HH:mm')}"></span>
         <span th:text="'Ended: ' + ${#temporals.format(attempt.endTime, 'dd-MM-yyyy HH:mm')}"></span>
-        <span th:text="'Duration: ' + ${#temporals.duration(attempt.startTime, attempt.endTime).toMinutes()} + ' minutes'"></span>
+        <!-- Duration is now calculated in the backend -->
+        <span th:with="duration=${T(java.time.Duration).between(attempt.startTime, attempt.endTime)}"
+              th:text="${'Duration: ' + duration.toMinutes() + ' minutes'}"></span>
       </div>
 
       <!-- Early End Notice -->
