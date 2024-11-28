@@ -1,5 +1,7 @@
 package com.FlashCardsHackathon.FlashcardsHackathon.controller;
 
+import com.FlashCardsHackathon.FlashcardsHackathon.service.AzureAIService;
+import com.FlashCardsHackathon.FlashcardsHackathon.service.AzureOpenAIService;
 import org.apache.commons.io.FilenameUtils;
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.Deck;
 import com.FlashCardsHackathon.FlashcardsHackathon.entity.FlashCard;
@@ -18,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.UUID;
 
 @Controller
@@ -32,6 +35,35 @@ public class FlashCardController {
 
     @Autowired
     private DeckService deckService;
+
+    @Autowired
+    private AzureAIService azureAIService;
+
+
+    @GetMapping("/generate-flashcards")
+    public String generateFlashcards(
+            @RequestParam(defaultValue = "") String question,
+            @RequestParam(defaultValue = "") String materie,
+            Model model) {
+        if (question.isEmpty() || materie.isEmpty()) {
+            model.addAttribute("error", "Both question and materie must be provided.");
+            return "error-page"; // Return an error page or handle accordingly
+        }
+
+        // Generate the flashcards but do not save them initially
+        List<FlashCard> generatedFlashcards = azureAIService.generateFlashcards(question, materie);
+        model.addAttribute("flashcards", generatedFlashcards);
+
+        // Flag to handle whether to save the flashcards or not
+        model.addAttribute("saveFlashcards", false); // Default to false, meaning not saved yet
+
+        return "flashcards-ai"; // The view where the flashcards will be shown
+    }
+    @GetMapping("/form")
+    public String showFlashcardForm() {
+        return "flashcards-ai-form"; // The view for the form
+    }
+
 
     @PostMapping("/save")
     public String saveFlashCard(@ModelAttribute FlashCard flashCard,

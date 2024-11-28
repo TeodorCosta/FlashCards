@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Generate AI Flashcards</title>
+</head>
+<body>
+<h1>Generate AI Flashcards</h1>
+<<form th:action="@{/flashcard/generate-flashcards}" method="get">
+  <label for="question">Question:</label>
+  <input type="text" id="question" name="question" required><br><br> <!-- "name" matches @RequestParam -->
+
+  <label for="materie">Materie:</label>
+  <input type="text" id="materie" name="materie" required><br><br> <!-- "name" matches @RequestParam -->
+
+  <button type="submit">Generate Flashcards</button>
+</form>
+
+</body>
+</html>
+

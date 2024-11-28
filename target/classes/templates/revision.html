@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/dashboard}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Revision Mode</title>
+  <link rel="stylesheet" th:href="@{/css/bootstrap.min.css}">
+  <link rel="stylesheet" th:href="@{/home.css}">
+  <style>
+        .revision-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .card-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            cursor: pointer;
+        }
+
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            color: #2d3748;
+        }
+
+        .answer {
+            font-size: 1.3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e2e8f0;
+            color: #4a5568;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-container:hover .answer {
+            opacity: 1;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e9ecef;
+            margin: 1rem 0;
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #0d6efd;
+            transition: width 0.3s ease;
+        }
+
+        .card-counter {
+            text-align: center;
+            color: #6c757d;
+            margin-bottom: 1rem;
+        }
+
+        .btn-nav {
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+<div layout:fragment="content">
+  <div class="revision-container">
+    <h1 class="mb-4" th:text="${deck.name + ' - Revision Mode'}">Recapitulare</h1>
+
+    <!-- Progress Bar -->
+    <div class="progress-bar">
+      <div class="progress-fill" th:style="'width: ' + ${(currentIndex + 1) * 100 / totalCards} + '%'"></div>
+    </div>
+
+    <!-- Card Counter -->
+    <div class="card-counter">
+      Card <span th:text="${currentIndex + 1}">1</span> of <span th:text="${totalCards}">10</span>
+    </div>
+
+    <!-- Flashcard -->
+    <div class="card-container">
+      <div class="question" th:text="${currentCard.question}">Question</div>
+      <div class="answer" th:text="${currentCard.answer}">Answer</div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="navigation">
+      <form th:action="@{/deck/{deckId}/revision/previous(deckId=${deck.id})}" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-outline-primary btn-nav"
+                th:disabled="${currentIndex == 0}">
+          Înapoi
+        </button>
+      </form>
+
+      <form th:action="@{/deck/{deckId}/revision/shuffle(deckId=${deck.id})}" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-outline-secondary btn-nav">
+          Amestecă
+        </button>
+      </form>
+
+      <form th:action="@{/deck/{deckId}/revision/next(deckId=${deck.id})}" method="post" style="display: inline;">
+        <button type="submit" class="btn btn-outline-primary btn-nav"
+                th:disabled="${currentIndex == totalCards - 1}">
+          Următorul
+        </button>
+      </form>
+    </div>
+
+    <div class="text-center mt-4">
+      <a th:href="@{/deck/list}" class="btn btn-secondary">Exit Recapitulare</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

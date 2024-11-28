@@ -2,7 +2,6 @@ package com.FlashCardsHackathon.FlashcardsHackathon.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Type;
 
 import java.util.UUID;
 
@@ -21,15 +20,17 @@ public class FlashCard {
 
     private String question;
     private String answer;
-
     private String materie;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "deck_id")
     private Deck deck;
 
-
     private String imagePath;
-
     private boolean shared;
+
+
+    private boolean isAIGenerated;
+    private String generationTopic;
 }
+
