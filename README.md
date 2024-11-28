@@ -1,7 +1,7 @@
 Flashcard App with Spring Boot and Thymeleaf 
 
 
-This is a web application built with Spring Boot and Thymeleaf that allows users to create and manage flashcards and flashcard decks. It includes features for creating personalized flashcards, taking quizzes, and revising them. The app also supports user authentication and the ability to share decks publicly.
+This is a web application built with Spring Boot and Thymeleaf that allows users to create and manage flashcards and flashcard decks. It includes features for creating personalized flashcards,creating AI-made flashcards using an already trained model, taking quizzes, and revising them. The app also supports user authentication and the ability to share decks publicly.
 
 Features
 
