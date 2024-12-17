@@ -31,7 +31,7 @@ Build and run the application:
 bash
 Copy code
 ./mvnw spring-boot:run
-Open the application in your browser at http://localhost:8080.
+Open the application in your browser at http://localhost:80.
 
 Create a user account to get started.
 
