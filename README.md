@@ -1,48 +1,66 @@
-Flashcard App with Spring Boot and Thymeleaf 
+# 🚀 Flashcard App  
 
+Flashcard App is a powerful and intuitive web application built with Spring Boot and Thymeleaf. It empowers users to create and manage personalized flashcards and decks, take quizzes, and revise effectively. With AI integration and a sleek user interface, it’s the ultimate tool for learning and sharing knowledge.  
 
-This is a web application built with Spring Boot and Thymeleaf that allows users to create and manage flashcards and flashcard decks. It includes features for creating personalized flashcards,creating AI-made flashcards using an already trained model, taking quizzes, and revising them. The app also supports user authentication and the ability to share decks publicly.
+---
 
-Features
+## 🌟 Features  
 
+### 🔒 User Authentication  
+- Secure login and registration system powered by Spring Security.  
+- Each user has a private account to manage their decks and flashcards.  
 
-User Authentication: Each user has their own account, with secure login and registration handled by Spring Security.
-Flashcards & Decks: Users can create, edit, and delete their own flashcards and organize them into decks.
-AI-Generated Flashcards using Davinci-002 model from Azure OpenAi
-Quizzes: Users can take quizzes based on their flashcards to test their knowledge.
-Revision Mode: A revision feature that helps users review flashcards.
-Public Sharing: Users can choose to make their flashcards and decks public for others to view and use.
-Personalized Dashboard: Users can see their own decks and flashcards on a dashboard.
-Technologies Used
-Backend: Spring Boot, Spring Security, Spring Data JPA
-Frontend: Thymeleaf, Bootstrap
-Database: PostgreSql Database 
-Security: Spring Security for user authentication and authorization
+### ✍️ Flashcards & Decks  
+- Create, edit, and delete custom flashcards.  
+- Organize flashcards into decks for better categorization.  
 
+### 🤖 AI-Generated Flashcards  
+- Automatically generate flashcards using **Davinci-002 model** from **Azure OpenAI**.  
+- Simply input a question, and the AI creates a flashcard for you.  
 
-Setup
-Clone this repository:
+### 🧠 Quizzes  
+- Test your knowledge by taking quizzes based on your decks.  
+- Randomized flashcards ensure a dynamic and engaging experience.  
 
-bash
-Copy code
-git clone https://github.com/yourusername/flashcard-app.git
-cd flashcard-app
-Build and run the application:
+### 🔄 Revision Mode  
+- Dedicated section for reviewing previously created flashcards.  
+- Stay on top of your learning goals with targeted revision.  
 
-bash
-Copy code
-./mvnw spring-boot:run
-Open the application in your browser at http://localhost:80.
+### 🌐 Public Sharing  
+- Share your flashcards and decks publicly with other users.  
+- Discover and use decks created by the community in the "Public Decks" section.  
 
-Create a user account to get started.
+### 📊 Personalized Dashboard  
+- Access all your decks and flashcards in a user-friendly dashboard.  
 
-Usage
+---
 
+## 🛠️ Technologies Used  
 
-Create Flashcards & Decks: Navigate to the "My Flashcards" section to add new flashcards and group them into decks.
-Create AI-Generated Flashcards by giving it the question first.
-Take a Quiz: Select a deck and start a quiz. The app will randomly select flashcards for you to answer.
-Revise Flashcards: Go to the revision section to review flashcards that you have previously created.
-Public Decks: Explore decks made public by other users in the "Public Decks" section.
-Contribution
-Feel free to fork this repository, submit pull requests, or open issues if you'd like to contribute. Your feedback and contributions are welcome!
+### Backend  
+- **Spring Boot**: Core framework for backend development.  
+- **Spring Security**: Secure user authentication and authorization.  
+- **Spring Data JPA**: Simplified database interactions.  
+
+### Frontend  
+- **Thymeleaf**: Dynamic HTML rendering.  
+- **Bootstrap**: Responsive and modern UI design.  
+
+### Database  
+- **PostgreSQL**: Reliable and robust relational database.  
+
+---
+
+## 🚀 Getting Started  
+
+### Prerequisites  
+- **Java 17** or higher  
+- **Maven 3.8+**  
+- **PostgreSQL**  
+
+### Setup  
+
+1. **Clone the repository**:  
+   ```bash  
+   git clone https://github.com/yourusername/flashcard-app.git  
+   cd flashcard-app  
