@@ -8,6 +8,7 @@ Features
 
 User Authentication: Each user has their own account, with secure login and registration handled by Spring Security.
 Flashcards & Decks: Users can create, edit, and delete their own flashcards and organize them into decks.
+AI-Generated Flashcards using Davinci-002 model from Azure OpenAi
 Quizzes: Users can take quizzes based on their flashcards to test their knowledge.
 Revision Mode: A revision feature that helps users review flashcards.
 Public Sharing: Users can choose to make their flashcards and decks public for others to view and use.
@@ -15,7 +16,7 @@ Personalized Dashboard: Users can see their own decks and flashcards on a dashbo
 Technologies Used
 Backend: Spring Boot, Spring Security, Spring Data JPA
 Frontend: Thymeleaf, Bootstrap
-Database: H2 Database (or your choice of SQL database)
+Database: PostgreSql Database 
 Security: Spring Security for user authentication and authorization
 
 
@@ -39,6 +40,7 @@ Usage
 
 
 Create Flashcards & Decks: Navigate to the "My Flashcards" section to add new flashcards and group them into decks.
+Create AI-Generated Flashcards by giving it the question first.
 Take a Quiz: Select a deck and start a quiz. The app will randomly select flashcards for you to answer.
 Revise Flashcards: Go to the revision section to review flashcards that you have previously created.
 Public Decks: Explore decks made public by other users in the "Public Decks" section.
